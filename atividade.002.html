@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="pt-br
+<head>
+    <meta charset="UTF-8">  
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>formulário com Canvas</title>
+    <style>
+
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #1b43aa;
+            color: #333;
+        }
+        h1, h2 {
+          text-align: center;
+            color: white;
+        }   
+
+        form {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.3);
+            max-width: 400px;
+            margin: auto;
+
+        }
+
+        label {
+            display: block;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+        input, textarea {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            box-sizing: border-box;
+            
+        }
+
+        input [type="range"] {
+            width: 100%;
+        }
+
+        button {
+            margin-top: 15px;
+            padding: 10px 15px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            width: 100%;
+        }
+
+        button:hover {
+            background-color: #218838;
+        }
+
+        canvas{
+            display: block;
+            margin: 20px auto;
+            border: 2px solid #ccc;
+            border-radius: 8px;
+            background: #f8f8f8;
+        }
+        </style>
+    </head>
+    <body>
+        <h1>Formulário de Satisfação</h1>
+
+
+    <form id="meuFormulario">
+        <label for="nome">Nome:</label>
+        <input type="text" id="nome" placeholder="Digite seu nome aqui">
+
+        <label for="email">E-mail:</label>
+        <input type="email" id="email" placeholder="Digite seu e-mail aqui">
+
+        <label for="data">Data de Nascimento:</label>
+        <input type="date" id="data">
+
+        <label for="telefone">Telefone:</label>
+        <input type="tel" id="telefone" placeholder="Digite seu telefone aqui">
+
+        <label for="satisfacao">Nível de satisfação: 
+            <span id="valorSatisfacao">50</span>%
+        </label>
+        <input type="range" id="satisfacao" name="satisfacao" min="0" max="100" value="50">
+
+        <button type="submit">Enviar</button>
+        
+    </form>
+
+    <h2> Resultado so Gráfico </h2>
+    <canvas id="grafico" width="400" height="200"></canvas>
+
+   
+<body>
+     <script>
+        const formulario = document.getElementById('meuFormulario');
+        const canvas = document.getElementById('grafico');
+        const ctx = canvas.getContext('2d');
+        const range = document.getElementById('satisfacao');
+        const valorSatisfacao = document.getElementById('valorSatisfacao');
+
+        // Atualiza o número ao lado do range
+        range.addEventListener('input', function() {
+            valorSatisfacao.textContent = range.value;
+        });
+
+        formulario.addEventListener('submit', function(event) {
+            event.preventDefault(); // Impede o carregamento da página
+
+            const satisfacao = range.value;
+
+            // Limpa o canvas antes de desenhar 
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Desenha o gráfico de barras
+            ctx.fillStyle = 'blue';
+            ctx.fillRect(50, canvas.height - satisfacao * 2, 100, satisfacao * 2);
+        });
+    </script> <script>
+        const formulario = document.getElementById('meuFormulario');
+        const canvas = document.getElementById('grafico');
+        const ctx = canvas.getContext('2d');
+        const range = document.getElementById('satisfacao');
+        const valorSatisfacao = document.getElementById('valorSatisfacao');
+
+        // Atualiza o número ao lado do range
+        range.addEventListener('input', function() {
+            valorSatisfacao.textContent = range.value;
+        });
+
+        formulario.addEventListener('submit', function(event) {
+            event.preventDefault(); // Impede o carregamento da página
+
+            const satisfacao = range.value;
+
+            // Limpa o canvas antes de desenhar 
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Desenha o gráfico de barras
+            ctx.fillStyle = 'blue';
+            ctx.fillRect(50, canvas.height - satisfacao * 2, 100, satisfacao * 2);
+        });
+    </script>
+
+
+    
+</body>
+</html>

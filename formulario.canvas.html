@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>video e aldio</title>
+
+</head>
+<body>
+    <h1>Mídia de Interação com Geolocalização</h1>
+
+        <h2>Vídeo</h2>
+
+    <video width="320" height="240" controls>
+        <source src="video.mp4" type="video/mp4">
+        Seu navegador não suporta o elemento de vídeo.
+    </video>
+
+    <audio controls>
+        <source src="audio.mp3" type="audio/mpeg">
+        Seu navegador não suporta o elemento de áudio.
+    </audio>
+    
+    <button onclick="mostrarlocalizacao()">Mostrar Localização</button>
+
+   <p id="saida"></p>
+
+   <script>
+    function mostrarlocalizacao() {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(mostrarPosicao);
+        } else {
+            document.getElementById("saida").innerHTML = "Geolocalização não é suportada por este navegador.";
+        }
+    }
+
+    function mostrarPosicao(position) {
+        var lat = position.coords.latitude;
+        var lon = position.coords.longitude;
+        document.getElementById("saida").innerHTML = "Latitude: " + lat + "<br>Longitude: " + lon;
+    }
+   </script>
+
+</body>
+</html>
