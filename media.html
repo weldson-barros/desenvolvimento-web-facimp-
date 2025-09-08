@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        let n1 = parseFloat(prompt("Digite a primeira nota:"));
+        let n2 = parseFloat(prompt("Digite a segunda nota:"));  
+        let n3 = parseFloat(prompt("Digite a terceira nota:"));
+        let n4 = parseFloat(prompt("Digite a quarta nota:"));
+
+        let media = (n1 + n2 + n3 + n4) / 4;
+        alert("A média é: " + media.toFixed(2));
+        console.log("A média é: " + media.toFixed(2));
+
+        if (media >= 7) {
+            alert("Aprovado");
+            console.log("Aprovado");
+        } else {
+            alert("Reprovado");
+            console.log("Reprovado");
+        }   
+
+    </script>
+    
+</body>
+</html>
