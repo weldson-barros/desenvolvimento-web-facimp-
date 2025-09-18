@@ -1,0 +1,301 @@
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Calculadora - Atividade</title>
+
+  <!-- CSS embutido: tema escuro, centralizado e grid para botões -->
+  <style>
+    :root{
+      --bg:#222;
+      --panel:#333;
+      --btn:#444;
+      --btn-hover:#5a5a5a;
+      --accent:#0aa;
+      --danger:#d9534f;
+      --warn:#f0ad4e;
+    }
+
+    html,body{
+      height:100%;
+      margin:0;
+      font-family:Arial, Helvetica, sans-serif;
+      background:var(--bg);
+      color:#fff;
+    }
+
+    /* centraliza a calculadora na tela */
+    .wrap {
+      height:100%;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:20px;
+    }
+
+    .calculadora {
+      background:var(--panel);
+      padding:18px;
+      border-radius:12px;
+      box-shadow:0 8px 30px rgba(0,0,0,0.6);
+      width:320px;
+    }
+
+    /* display (tela) */
+    #display {
+      width:100%;
+      height:56px;
+      font-size:22px;
+      padding:8px 12px;
+      border-radius:8px;
+      border:none;
+      background:#0f0f0f;
+      color:#bfffbf;
+      text-align:right;
+      box-sizing:border-box;
+      margin-bottom:12px;
+    }
+
+    /* grade dos botões: 4 colunas */
+    .botoes {
+      display:grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap:10px;
+    }
+
+    button {
+      height:48px;
+      border-radius:8px;
+      border:none;
+      background:var(--btn);
+      color:#fff;
+      font-size:18px;
+      cursor:pointer;
+      transition:transform .08s ease, background .12s;
+    }
+
+    button:active { transform: translateY(1px); }
+    button:hover { background:var(--btn-hover); }
+
+    /* botões especiais */
+    .op { background:#3b3b3b; }         /* operadores */
+    .igual { background:var(--accent); color:#001; font-weight:700; grid-column: span 1; }
+    .clear { background:var(--danger); }
+    .del { background:var(--warn); color:#000; }
+
+    /* adapta para telas menores */
+    @media (max-width:360px){
+      .calculadora { width:100%; }
+      #display { font-size:20px; height:48px; }
+      button { font-size:16px; height:44px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="calculadora">
+      <!-- uso readonly: o usuário não digita direto, mas o JS atualiza o valor -->
+      <input id="display" type="text" readonly placeholder="0">
+
+      <!-- botões (data-value contém o valor real usado no cálculo) -->
+      <div class="botoes">
+        <button id="limpar" class="clear">C</button>
+        <button id="deletar" class="del">DEL</button>
+        <button class="op" data-value="/">÷</button>
+        <button class="op" data-value="*">×</button>
+
+        <button class="btn" data-value="7">7</button>
+        <button class="btn" data-value="8">8</button>
+        <button class="btn" data-value="9">9</button>
+        <button class="op" data-value="-">-</button>
+
+        <button class="btn" data-value="4">4</button>
+        <button class="btn" data-value="5">5</button>
+        <button class="btn" data-value="6">6</button>
+        <button class="op" data-value="+">+</button>
+
+        <button class="btn" data-value="1">1</button>
+        <button class="btn" data-value="2">2</button>
+        <button class="btn" data-value="3">3</button>
+        <button id="igual" class="igual">=</button>
+
+        <button class="btn" data-value="0" style="grid-column: span 2;">0</button>
+        <button class="btn" data-value=".">.</button>
+        <!-- espaço vazio intencional: mantém grid alinhado -->
+        <div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- JS com comentários explicativos linha-a-linha -->
+  <script>
+    // Pega referências dos elementos da página
+    const display = document.getElementById('display');          // campo que mostra a expressão/resultado
+    const botoes = document.querySelectorAll('.btn');           // botões numerais e ponto
+    const ops = document.querySelectorAll('.op');               // botões de operador (+ - * /)
+    const limparBtn = document.getElementById('limpar');        // botão C (limpar tudo)
+    const delBtn = document.getElementById('deletar');          // botão DEL (apagar último)
+    const igualBtn = document.getElementById('igual');          // botão = (calcular)
+
+    // Conjunto de operadores para validações
+    const operadores = ['+', '-', '*', '/'];
+
+    // Função utilitária: verifica se um caractere é operador
+    function isOperator(ch) {
+      return operadores.includes(ch);
+    }
+
+    // Inserir valor (usada por botões e teclado)
+    function inserir(valor) {
+      // Se a tela estiver com "Erro", ao inserir começamos de novo
+      if (display.value === 'Erro') display.value = '';
+
+      const ultimo = display.value.slice(-1); // último caractere atual
+
+      // Se o valor é operador...
+      if (isOperator(valor)) {
+        // Se display vazio: só permite sinal negativo para iniciar número negativo
+        if (display.value === '') {
+          if (valor === '-') {
+            display.value = '-';
+          }
+          // se for outro operador no começo, não insere
+          return;
+        }
+        // Se último já é operador, substitui pelo novo (evita ++ ou +*)
+        if (isOperator(ultimo)) {
+          display.value = display.value.slice(0, -1) + valor;
+          return;
+        }
+        // caso normal: adiciona operador
+        display.value += valor;
+        return;
+      }
+
+      // Se o valor é ponto decimal: evita colocar dois pontos no mesmo número
+      if (valor === '.') {
+        // Pega o segmento atual após o último operador
+        const partes = display.value.split(/[\+\-\*\/]/);
+        const atual = partes[partes.length - 1];
+        // se já existe um ponto nesse segmento, ignora
+        if (atual.includes('.')) return;
+        // se segmento vazio (ex.: ao digitar "."): adiciona "0." para ficar bem formado
+        if (atual === '') {
+          display.value += '0';
+        }
+        display.value += '.';
+        return;
+      }
+
+      // Caso comum: número (0-9)
+      display.value += valor;
+    }
+
+    // Limpar tudo
+    function limpar() {
+      display.value = '';
+    }
+
+    // Apagar último caractere
+    function deletar() {
+      // se estiver escrito "Erro", limpa tudo
+      if (display.value === 'Erro') {
+        display.value = '';
+        return;
+      }
+      display.value = display.value.slice(0, -1);
+    }
+
+    // Calcular resultado
+    function calcular() {
+      // expressão atual
+      let expr = display.value;
+
+      // validações básicas:
+      if (!expr) return; // nada a calcular
+      const ultimo = expr.slice(-1);
+      // se terminar com operador, é expressão inválida
+      if (isOperator(ultimo)) {
+        display.value = 'Erro';
+        return;
+      }
+
+      // tenta avaliar a expressão de forma controlada
+      try {
+        // Usa Function para avaliar em modo estrito (alternativa ao eval)
+        // IMPORTANTE: em produção isso requer parser matemático. Para atividade local está aceitável.
+        const resultado = Function('"use strict"; return (' + expr + ')')();
+
+        // testa resultado válido (número finito)
+        if (typeof resultado === 'number' && isFinite(resultado)) {
+          // remove casas decimais extras (se houver) para exibir mais limpo:
+          // se for inteiro, mostra sem decimal; se decimal, mostra até 8 casas significativas
+          if (Number.isInteger(resultado)) {
+            display.value = String(resultado);
+          } else {
+            display.value = String(parseFloat(resultado.toFixed(8)).toString());
+          }
+        } else {
+          display.value = 'Erro';
+        }
+      } catch (e) {
+        // qualquer erro de sintaxe cai aqui
+        display.value = 'Erro';
+      }
+    }
+
+    // Conecta os eventos de clique dos botões numéricos/ponto
+    botoes.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const v = btn.getAttribute('data-value');
+        inserir(v); // insere o valor no display
+      });
+    });
+
+    // Conecta os operadores
+    ops.forEach(op => {
+      op.addEventListener('click', () => {
+        const v = op.getAttribute('data-value');
+        inserir(v);
+      });
+    });
+
+    // Botões limpar, deletar e igual com addEventListener (como pede a atividade)
+    limparBtn.addEventListener('click', limpar);
+    delBtn.addEventListener('click', deletar);
+    igualBtn.addEventListener('click', calcular);
+
+    // Suporte a teclado:
+    // - números e sinais inserem,
+    // - Enter calcula,
+    // - Backspace deleta,
+    // - Escape limpa.
+    document.addEventListener('keydown', (e) => {
+      // aceita teclas numéricas e operadores básicos
+      if ((e.key >= '0' && e.key <= '9') || ['+', '-', '*', '/', '.'].includes(e.key)) {
+        e.preventDefault();
+        inserir(e.key);
+        return;
+      }
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        calcular();
+        return;
+      }
+      if (e.key === 'Backspace') {
+        e.preventDefault();
+        deletar();
+        return;
+      }
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        limpar();
+        return;
+      }
+    });
+
+    // (Opcional) evita seleção de texto na tela ao clicar repetidamente
+    display.addEventListener('mousedown', (e) => e.preventDefault());
+  </script>
+</body>
+</html>
